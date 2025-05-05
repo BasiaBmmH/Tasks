@@ -5,6 +5,7 @@ import com.crud.tasks.domain.TaskDto;
 import com.crud.tasks.mapper.TaskMapper;
 import com.crud.tasks.service.DbService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,12 +32,12 @@ public class TaskController {
         return taskMapper.mapToTaskDtoList(tasks);
     }
 
-    @GetMapping(value = "{taskId}")
-    public ResponseEntity<TaskDto> getTaskById(@PathVariable Long taskId) {
-        return service.getTask(taskId)
-                .map(task -> ResponseEntity.ok(taskMapper.mapToTaskDto(task)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+//    @GetMapping(value = "{taskId}")
+//    public ResponseEntity<TaskDto> getTaskById(@PathVariable Long taskId) {
+//        return service.getTask(taskId)
+//                .map(task -> ResponseEntity.ok(taskMapper.mapToTaskDto(task)))
+//                .orElseGet(() -> ResponseEntity.notFound().build());
+//    }
 
 
 
@@ -73,7 +74,15 @@ public class TaskController {
         return getTasks();
     }
 
-
+    @GetMapping(value = "{taskId}")
+    public ResponseEntity<TaskDto> getTask(@PathVariable Long taskId) throws TaskNotFoundException {
+        try {
+            return new ResponseEntity<>(taskMapper.mapToTaskDto(service.getTask(taskId)), HttpStatus.OK);
+        }catch (TaskNotFoundException e){
+            return new ResponseEntity<>(
+                    new TaskDto(0L,"There is no task with id equal to " + taskId,""), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
 }
