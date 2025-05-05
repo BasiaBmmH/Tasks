@@ -5,11 +5,11 @@ import com.crud.tasks.domain.TaskDto;
 import com.crud.tasks.mapper.TaskMapper;
 import com.crud.tasks.service.DbService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/tasks")
@@ -31,10 +31,19 @@ public class TaskController {
         return taskMapper.mapToTaskDtoList(tasks);
     }
 
-    @GetMapping(value = "{taskID}")
-    public TaskDto getTask(@PathVariable Long taskID) {
-        return new TaskDto(1L, "test title", "test_content");
+    @GetMapping(value = "{taskId}")
+    public ResponseEntity<TaskDto> getTaskById(@PathVariable Long taskId) {
+        return service.getTaskById(taskId)
+                .map(task -> ResponseEntity.ok(taskMapper.mapToTaskDto(task)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+
+
+//    @GetMapping(value = "{taskID}")
+//    public TaskDto getTask(@PathVariable Long taskID) {
+//        return new TaskDto(1L, "test title", "test_content");
+//    }
 
     @DeleteMapping
     public void deleteTask(Long taskId) {
