@@ -34,4 +34,18 @@ public class TaskController {
     public void createTask(TaskDto taskDto) {
 
     }
+
+    //zwraca liczbe zadan
+    @GetMapping("/count")
+    public int countTasks() {
+        return getTasks().size();
+    }
+
+    //zwrca liste zadan
+    @GetMapping("/search")
+    public List<TaskDto> searchTasks() {
+        return getTasks();
+    }
+
+
 }
