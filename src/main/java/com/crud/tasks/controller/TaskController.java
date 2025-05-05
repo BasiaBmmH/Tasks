@@ -20,69 +20,35 @@ public class TaskController {
     private final DbService service;
     private final TaskMapper taskMapper;
 
-//    @Autowired
-//    public TaskController(DbService service, TaskMapper taskMapper) {
-//        this.service = service;
-//        this.taskMapper = taskMapper;
-//    }
-
     @GetMapping
-    public List<TaskDto> getTasks() {
+    public ResponseEntity<List<TaskDto>> getTasks() {
         List<Task> tasks = (List<Task>) service.getAllTasks();
-        return taskMapper.mapToTaskDtoList(tasks);
+        return ResponseEntity.ok(taskMapper.mapToTaskDtoList(tasks));
     }
 
-//    @GetMapping(value = "{taskId}")
-//    public ResponseEntity<TaskDto> getTaskById(@PathVariable Long taskId) {
-//        return service.getTask(taskId)
-//                .map(task -> ResponseEntity.ok(taskMapper.mapToTaskDto(task)))
-//                .orElseGet(() -> ResponseEntity.notFound().build());
-//    }
-
-
-
-//    @GetMapping(value = "{taskID}")
-//    public TaskDto getTask(@PathVariable Long taskID) {
-//        return new TaskDto(1L, "test title", "test_content");
-//    }
-
-    @DeleteMapping
-    public void deleteTask(Long taskId) {
-
-    }
-
-    @PutMapping
-    public TaskDto updateTask(TaskDto taskDto) {
-        return new TaskDto(1L, "Edited test title", "Test content");
-    }
-
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createTask(@RequestBody TaskDto taskDto) {
-        Task task = taskMapper.mapToTask(taskDto);
-        service.saveTask(task);
-    }
-
-    //zwraca liczbe zadan
-    @GetMapping("/count")
-    public int countTasks() {
-        return getTasks().size();
-    }
-
-    //zwrca liste zadan
-    @GetMapping("/search")
-    public List<TaskDto> searchTasks() {
-        return getTasks();
-    }
 
     @GetMapping(value = "{taskId}")
     public ResponseEntity<TaskDto> getTask(@PathVariable Long taskId) throws TaskNotFoundException {
-        try {
-            return new ResponseEntity<>(taskMapper.mapToTaskDto(service.getTask(taskId)), HttpStatus.OK);
-        }catch (TaskNotFoundException e){
-            return new ResponseEntity<>(
-                    new TaskDto(0L,"There is no task with id equal to " + taskId,""), HttpStatus.BAD_REQUEST);
-        }
+
+        return ResponseEntity.ok(taskMapper.mapToTaskDto(service.getTask(taskId)));
+
     }
 
+    @DeleteMapping(value = ("{taskId}"))
+    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto) {
+        return ResponseEntity.ok(new TaskDto(1L, "Edited test title", "Test content"));
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> createTask(@RequestBody TaskDto taskDto) {
+        Task task = taskMapper.mapToTask(taskDto);
+        service.saveTask(task);
+        return ResponseEntity.ok().build();
+    }
 
 }
