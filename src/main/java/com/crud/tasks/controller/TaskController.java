@@ -34,21 +34,38 @@ public class TaskController {
 
     }
 
-    @DeleteMapping(value = ("{taskId}"))
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
-        return ResponseEntity.ok().build();
-    }
+//    @DeleteMapping(value = ("{taskId}"))
+//    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
+//        return ResponseEntity.ok().build();
+//    }
 
-    @PutMapping
-    public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto) {
-        return ResponseEntity.ok(new TaskDto(1L, "Edited test title", "Test content"));
-    }
+//    @PutMapping
+//    public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto) {
+//        return ResponseEntity.ok(new TaskDto(1L, "Edited test title", "Test content"));
+//    }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createTask(@RequestBody TaskDto taskDto) {
         Task task = taskMapper.mapToTask(taskDto);
         service.saveTask(task);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<TaskDto> updateTask(@RequestBody TaskDto taskDto) {
+        Task task = taskMapper.mapToTask(taskDto);
+        Task savedTask = service.saveTask(task);
+        return ResponseEntity.ok(taskMapper.mapToTaskDto(savedTask));
+    }
+
+    @DeleteMapping(value = "{taskId}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
+        try {
+            service.deleteTask(taskId);
+            return ResponseEntity.ok().build();
+        } catch (TaskNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
 }

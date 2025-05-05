@@ -26,4 +26,12 @@ public class DbService {
         return repository.findById(id).orElseThrow(TaskNotFoundException::new);
     }
 
+    public void deleteTask(final Long id) throws TaskNotFoundException {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+        } else {
+            throw new TaskNotFoundException();
+        }
+    }
+
 }
