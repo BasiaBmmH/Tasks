@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -84,5 +85,34 @@ class TrelloClientTest {
         assertEquals("test task", newCard.getName());
         assertEquals("http://test.com", newCard.getShortUrl());
     }
+
+    @Test
+    void shouldReturnEmptyList() throws URISyntaxException {
+        // Given
+        when(trelloConfig.getTrelloApiEndpoint()).thenReturn("http://test.com");
+        when(trelloConfig.getTrelloUser()).thenReturn("test");
+        when(trelloConfig.getTrelloAppKey()).thenReturn("test");
+        when(trelloConfig.getTrelloToken()).thenReturn("test");
+
+        URI uri = UriComponentsBuilder
+                .fromHttpUrl("http://test.com/members/test/boards")
+                .queryParam("key", "test")
+                .queryParam("token", "test")
+                .queryParam("fields", "name,id")
+                .queryParam("lists", "all")
+                .build()
+                .encode()
+                .toUri();
+
+        when(restTemplate.getForObject(uri, TrelloBoardDto[].class)).thenReturn(null);
+
+        // When
+        List<TrelloBoardDto> result = trelloClient.getTrelloBoards();
+
+        // Then
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Resulting list should be empty");
+    }
+
 
 }
