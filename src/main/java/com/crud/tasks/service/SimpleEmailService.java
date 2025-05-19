@@ -30,7 +30,6 @@ public class SimpleEmailService {
 
     private SimpleMailMessage createMailMessage(final Mail mail) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("noreply@yourdomain.com");
         mailMessage.setTo(mail.getMailTo());
         mailMessage.setSubject(mail.getSubject());
         mailMessage.setText(mail.getMessage());
