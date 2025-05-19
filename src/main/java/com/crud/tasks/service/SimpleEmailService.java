@@ -30,13 +30,13 @@ public class SimpleEmailService {
 
     private SimpleMailMessage createMailMessage(final Mail mail) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom("noreply@yourdomain.com");
         mailMessage.setTo(mail.getMailTo());
         mailMessage.setSubject(mail.getSubject());
         mailMessage.setText(mail.getMessage());
-
-        Optional.ofNullable(mail.getToCc())
-                .ifPresent(mailMessage::setCc);
-
+        if (Optional.ofNullable(mail.getToCc()).isPresent()) {
+            mailMessage.setCc(mail.getToCc());
+        }
         return mailMessage;
     }
 }
